@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, setDefaultCamera, useThree, extend } from 'react-three-fiber'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
+const pivots = [];
+
 extend({ OrbitControls })
 const Controls = (props) => {
   const { gl, camera } = useThree()
@@ -11,32 +13,35 @@ const Controls = (props) => {
   return <orbitControls ref={ref} args={[camera, gl.domElement]} {...props} />
 }
 
-function Box(props) {
-  // This reference will give us direct access to the mesh
+function Sphere(props) {
+  const pivot = pivots[0]
   const mesh = useRef()
-
-  // Set up state for the hovered and active state
   const [hovered, setHover] = useState(false)
-
-  // Rotate mesh every frame, this is outside of React without overhead
   useFrame(() => (mesh.current.rotation.x = mesh.current.rotation.y += 0.01))
-
   return (
     <mesh
+      attach={pivot}
       {...props}
       ref={mesh}
-      scale={[1, 1, 1]}
+      castShadow
       onPointerOver={(e) => setHover(true)}
       onPointerOut={(e) => setHover(false)}>
-      <boxGeometry attach="geometry" args={[1, 1, 1]} />
-      <meshStandardMaterial attach="material" color={hovered ? 'hotpink' : 'orange'} />
+      <sphereGeometry attach="geometry" args={[props.radius, 100, 100]} />
+      <meshStandardMaterial
+        attach="material"
+        color={props.color}
+        transparent
+        roughness={0.1}
+        metalness={0.1} />
     </mesh>
   )
 }
 
+pivots.push(<Sphere position={[0, 10, 0]} />);
+
 ReactDOM.render(
   <Canvas
-    camera={{ position: [0, 0, 5] }}
+    camera={{ position: [0, 0, 10] }}
   >
     <Controls
       enablePan={true}
@@ -47,8 +52,26 @@ ReactDOM.render(
     />
     <ambientLight />
     <pointLight position={[10, 10, 10]} />
-    <Box position={[-1.2, 0, -2]} />
-    <Box position={[1.2, 0, -2]} />
+    <Sphere 
+      postion={[0, 0 , 0]} 
+      color={'yellow'}
+      radius={2}
+    />
+    <Sphere 
+      position={[5, 0.5, 0 ]}
+      color={'firebrick'}
+      radius={1}
+     />
+    <Sphere 
+      position={[10, 0.5, 0 ]}
+      color={'purple'}
+      radius={1}
+     />
+    <Sphere 
+      position={[15, 0.5, 0 ]}
+      color={'teal'}
+      radius={1}
+     />
   </Canvas>,
   document.getElementById('root')
 );
