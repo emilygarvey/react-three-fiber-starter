@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom'
 import React, { useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, setDefaultCamera, useThree, extend } from 'react-three-fiber'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { useSpring, animated } from 'react-spring/three'
 
 const pivots = [];
 
@@ -17,15 +18,21 @@ function Sphere(props) {
   const pivot = pivots[0]
   const mesh = useRef()
   const [hovered, setHover] = useState(false)
+  const animate = useSpring({
+    scale: hovered ? [1.25, 1.25, 1.25] : [1, 1, 1]
+  })
   useFrame(() => (mesh.current.rotation.x = mesh.current.rotation.y += 0.01))
+
   return (
-    <mesh
+    <animated.mesh
       attach={pivot}
       {...props}
       ref={mesh}
       castShadow
       onPointerOver={(e) => setHover(true)}
-      onPointerOut={(e) => setHover(false)}>
+      onPointerOut={(e) => setHover(false)}
+      scale={animate.scale}
+    >
       <sphereGeometry attach="geometry" args={[props.radius, 100, 100]} />
       <meshStandardMaterial
         attach="material"
@@ -33,7 +40,7 @@ function Sphere(props) {
         transparent
         roughness={0.1}
         metalness={0.1} />
-    </mesh>
+    </animated.mesh>
   )
 }
 
