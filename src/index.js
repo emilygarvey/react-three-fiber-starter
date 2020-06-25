@@ -1,9 +1,8 @@
 import ReactDOM from 'react-dom'
-import React, { useEffect, useRef, useState } from 'react'
-import { Canvas, useFrame, setDefaultCamera, useThree, extend } from 'react-three-fiber'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
+import { Canvas, useFrame, setDefaultCamera, useThree, extend, useLoader } from 'react-three-fiber'
+import { TextureLoader, MeshStandardMaterial } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-
-const pivots = [];
 
 extend({ OrbitControls })
 const Controls = (props) => {
@@ -14,21 +13,21 @@ const Controls = (props) => {
 }
 
 function Sphere(props) {
-  const pivot = pivots[0]
   const mesh = useRef()
   const [hovered, setHover] = useState(false)
-  useFrame(() => (mesh.current.rotation.x = mesh.current.rotation.y += 0.01))
+  useFrame(() => (mesh.current.rotation.y += 0.01))
   return (
     <mesh
-      attach={pivot}
       {...props}
       ref={mesh}
       castShadow
       onPointerOver={(e) => setHover(true)}
       onPointerOut={(e) => setHover(false)}
+      scale={hovered ? [1.25, 1.25, 1.25] : [1, 1, 1]}
     >
       <sphereGeometry attach="geometry" args={[props.radius, 100, 100]} />
       <meshStandardMaterial
+        map={props.material}
         attach="material"
         color={props.color}
         transparent
@@ -38,26 +37,149 @@ function Sphere(props) {
   )
 }
 
-function Ring(props) {
+function Torus(props) {
   const mesh = useRef()
+  const [hovered, setHover] = useState(false)
+  setTimeout(() => { console.log(mesh); mesh.current.rotation.x = 90 }, 1000)
+  useFrame(() => (mesh.current.rotation.y += 0.01))
   return (
     <mesh
       {...props}
+      ref={mesh}
+      onPointerOver={(e) => setHover(true)}
+      onPointerOut={(e) => setHover(false)}
+      scale={hovered ? [1.25, 1.25, 1.25] : [1, 1, 1]}
     >
-      <ringGeometry attach="geometry" args={[3, 3.5, 64]} />
+      <torusGeometry attach="geometry" args={[3, props.width, 3.5, 64]} />
       <meshStandardMaterial
         attach="material"
-        color={props.color} />
+        color={props.color}
+        doubleSided={true} />
     </mesh>
   )
 }
 
-pivots.push(<Sphere position={[0, 10, 0]} />);
+function Sun() {
+  const sunTexture = useMemo(() => new TextureLoader().load('sun.jpg'), []);
+  console.log(sunTexture);
+  return (
+    <Sphere 
+      postion={[0, 0, 0]} 
+      radius={3}
+      material={sunTexture}
+    />
+  )
+}
+
+function Mercury() {
+  const ref = useRef()
+  useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.3))
+  return (
+    <group ref={ref}>
+      <Sphere 
+        position={[5, 0.5, 0 ]}
+        color={'gray'}
+        radius={1}
+      />
+     </group>
+  )
+}
+
+function Venus() {
+  const ref = useRef()
+  useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.2))
+  return (
+    <group ref={ref}>
+      <Sphere 
+        position={[10, 0.5, 0 ]}
+        color={'purple'}
+        radius={1}
+      />
+    </group>
+  )
+}
+
+function Earth() {
+  const ref = useRef()
+  useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.3))
+  return (
+    <group ref={ref}>
+      <Sphere 
+        position={[15, 0.5, 0 ]}
+        color={'teal'}
+        radius={1}
+      />
+    </group>
+    )
+  }
+
+function Mars() {
+  const ref = useRef()
+  useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.4))
+  return (
+    <group ref={ref}>
+      <Sphere 
+      position={[20, 0.5, 0 ]}
+      color={'firebrick'}
+      radius={1}
+     />
+    </group>
+    )
+  }
+
+function Jupiter() {
+  const ref = useRef()
+  useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.1))
+  return (
+    <group ref={ref}>
+      <Sphere 
+          position={[25, 0.5, 0 ]}
+          color={'tan'}
+          radius={2}
+        />
+        <Torus
+          position={[25, 0.5, 0 ]}
+          color={'tan'}
+          width={0.2}
+        />
+    </group>
+  )
+}
+function Saturn() {
+  const ref = useRef()
+  useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.15))
+  return (
+    <group ref={ref}>
+      <Sphere 
+          position={[30, 0.5, 0 ]}
+          color={'sandybrown'}
+          radius={2.5}
+        />
+        <Torus
+          position={[30, 0.5, 0 ]}
+          color={'sandybrown'}
+          width={0.45}
+        />
+    </group>
+  )
+}
+
+function Uranus() {
+  const ref = useRef()
+  useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.3))
+  return (
+    <group ref={ref}>
+      <Sphere 
+      position={[35, 0.5, 0 ]}
+      color={'lightskyblue'}
+      radius={1.75}
+     />
+    </group>
+    )
+  }
 
 ReactDOM.render(
-  <Canvas
-    camera={{ position: [0, 0, 10] }}
-  >
+  <Canvas camera={{ position: [0, 0, 50] }} >
     <Controls
       enablePan={true}
       enableZoom={true}
@@ -66,41 +188,15 @@ ReactDOM.render(
       rotateSpeed={1}
     />
     <ambientLight />
-    <pointLight position={[10, 10, 10]} />
-    <Sphere 
-      postion={[0, 0 , 0]} 
-      color={'yellow'}
-      radius={3}
-    />
-    <Sphere 
-      position={[5, 0.5, 0 ]}
-      color={'gray'}
-      radius={1}
-     />
-    <Sphere 
-      position={[10, 0.5, 0 ]}
-      color={'purple'}
-      radius={1}
-     />
-    <Sphere 
-      position={[15, 0.5, 0 ]}
-      color={'teal'}
-      radius={1}
-     />
-    <Sphere 
-      position={[20, 0.5, 0 ]}
-      color={'firebrick'}
-      radius={1}
-     />
-     <Sphere 
-      position={[25, 0.5, 0 ]}
-      color={'tan'}
-      radius={2}
-     />
-     <Ring
-      position={[25, 0.5, 0 ]}
-      color={'tan'}
-     />
+    <pointLight position={[0, 0, 0]} />
+    <Sun />
+    <Mercury />
+    <Venus />
+    <Earth />
+    <Mars />
+    <Jupiter />
+    <Saturn />
+    <Uranus />
   </Canvas>,
   document.getElementById('root')
 );
