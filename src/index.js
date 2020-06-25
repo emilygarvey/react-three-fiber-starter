@@ -25,7 +25,8 @@ function Sphere(props) {
       ref={mesh}
       castShadow
       onPointerOver={(e) => setHover(true)}
-      onPointerOut={(e) => setHover(false)}>
+      onPointerOut={(e) => setHover(false)}
+    >
       <sphereGeometry attach="geometry" args={[props.radius, 100, 100]} />
       <meshStandardMaterial
         attach="material"
@@ -33,6 +34,20 @@ function Sphere(props) {
         transparent
         roughness={0.1}
         metalness={0.1} />
+    </mesh>
+  )
+}
+
+function Ring(props) {
+  const mesh = useRef()
+  return (
+    <mesh
+      {...props}
+    >
+      <ringGeometry attach="geometry" args={[3, 3.5, 64]} />
+      <meshStandardMaterial
+        attach="material"
+        color={props.color} />
     </mesh>
   )
 }
@@ -55,11 +70,11 @@ ReactDOM.render(
     <Sphere 
       postion={[0, 0 , 0]} 
       color={'yellow'}
-      radius={2}
+      radius={3}
     />
     <Sphere 
       position={[5, 0.5, 0 ]}
-      color={'firebrick'}
+      color={'gray'}
       radius={1}
      />
     <Sphere 
@@ -71,6 +86,20 @@ ReactDOM.render(
       position={[15, 0.5, 0 ]}
       color={'teal'}
       radius={1}
+     />
+    <Sphere 
+      position={[20, 0.5, 0 ]}
+      color={'firebrick'}
+      radius={1}
+     />
+     <Sphere 
+      position={[25, 0.5, 0 ]}
+      color={'tan'}
+      radius={2}
+     />
+     <Ring
+      position={[25, 0.5, 0 ]}
+      color={'tan'}
      />
   </Canvas>,
   document.getElementById('root')
