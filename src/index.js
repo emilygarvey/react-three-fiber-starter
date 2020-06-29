@@ -40,7 +40,7 @@ function Sphere(props) {
 function Torus(props) {
   const mesh = useRef()
   const [hovered, setHover] = useState(false)
-  setTimeout(() => { mesh.current.rotation.x = 90 }, 1000)
+  setTimeout(() => { console.log(mesh); mesh.current.rotation.x = 90 }, 1000)
   useFrame(() => (mesh.current.rotation.y += 0.01))
   return (
     <mesh
@@ -52,7 +52,6 @@ function Torus(props) {
     >
       <torusGeometry attach="geometry" args={[3, props.width, 3.5, 64]} />
       <meshStandardMaterial
-        map={props.material}
         attach="material"
         color={props.color}
         doubleSided={true} />
@@ -62,6 +61,7 @@ function Torus(props) {
 
 function Sun() {
   const sunTexture = useMemo(() => new TextureLoader().load('sun.jpg'), []);
+  console.log(sunTexture);
   return (
     <Sphere 
       postion={[0, 0, 0]} 
@@ -72,14 +72,13 @@ function Sun() {
 }
 
 function Mercury() {
-  const mercuryTexture = useMemo(() => new TextureLoader().load('mercury.jpeg'), []);
   const ref = useRef()
   useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.3))
   return (
     <group ref={ref}>
       <Sphere 
         position={[5, 0.5, 0 ]}
-        material={mercuryTexture}
+        color={'gray'}
         radius={1}
       />
      </group>
@@ -87,14 +86,13 @@ function Mercury() {
 }
 
 function Venus() {
-  const venusTexture = useMemo(() => new TextureLoader().load('venus.jpg'), []);
   const ref = useRef()
   useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.2))
   return (
     <group ref={ref}>
       <Sphere 
         position={[10, 0.5, 0 ]}
-        material={venusTexture}
+        color={'purple'}
         radius={1}
       />
     </group>
@@ -102,14 +100,13 @@ function Venus() {
 }
 
 function Earth() {
-  const earthTexture = useMemo(() => new TextureLoader().load('earth.png'), []);
   const ref = useRef()
   useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.3))
   return (
     <group ref={ref}>
       <Sphere 
         position={[15, 0.5, 0 ]}
-        material={earthTexture}
+        color={'teal'}
         radius={1}
       />
     </group>
@@ -117,14 +114,13 @@ function Earth() {
   }
 
 function Mars() {
-  const marsTexture = useMemo(() => new TextureLoader().load('mars.jpeg'), []);
   const ref = useRef()
   useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.4))
   return (
     <group ref={ref}>
       <Sphere 
       position={[20, 0.5, 0 ]}
-      material={marsTexture}
+      color={'firebrick'}
       radius={1}
      />
     </group>
@@ -132,38 +128,36 @@ function Mars() {
   }
 
 function Jupiter() {
-  const jupiterTexture = useMemo(() => new TextureLoader().load('jupiter.jpg'), []);
   const ref = useRef()
   useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.1))
   return (
     <group ref={ref}>
       <Sphere 
           position={[25, 0.5, 0 ]}
-          material={jupiterTexture}
+          color={'tan'}
           radius={2}
         />
         <Torus
           position={[25, 0.5, 0 ]}
-          material={jupiterTexture}
+          color={'tan'}
           width={0.2}
         />
     </group>
   )
 }
 function Saturn() {
-  const saturnTexture = useMemo(() => new TextureLoader().load('saturn.jpg'), []);
   const ref = useRef()
   useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.15))
   return (
     <group ref={ref}>
       <Sphere 
           position={[30, 0.5, 0 ]}
-          material={saturnTexture}
+          color={'sandybrown'}
           radius={2.5}
         />
         <Torus
           position={[30, 0.5, 0 ]}
-          material={saturnTexture}
+          color={'sandybrown'}
           width={0.45}
         />
     </group>
@@ -171,37 +165,21 @@ function Saturn() {
 }
 
 function Uranus() {
-  const uranusTexture = useMemo(() => new TextureLoader().load('uranus.jpg'), []);
   const ref = useRef()
   useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.3))
   return (
     <group ref={ref}>
       <Sphere 
       position={[35, 0.5, 0 ]}
-      material={uranusTexture}
+      color={'lightskyblue'}
       radius={1.75}
      />
     </group>
     )
   }
 
-function Neptune() {
-  const neptuneTexture = useMemo(() => new TextureLoader().load('neptune.jpg'), []);
-  const ref = useRef()
-  useFrame(({ clock }) => (ref.current.rotation.y = clock.getElapsedTime()* 0.35))
-  return (
-    <group ref={ref}>
-      <Sphere 
-      position={[40, 0.5, 0 ]}
-      material={neptuneTexture}
-      radius={2.1}
-      />
-    </group>
-    )
-  }
-
 ReactDOM.render(
-  <Canvas camera={{ position: [0, 0, 35] }} >
+  <Canvas camera={{ position: [0, 0, 50] }} >
     <Controls
       enablePan={true}
       enableZoom={true}
@@ -219,7 +197,6 @@ ReactDOM.render(
     <Jupiter />
     <Saturn />
     <Uranus />
-    <Neptune />
   </Canvas>,
   document.getElementById('root')
 );
