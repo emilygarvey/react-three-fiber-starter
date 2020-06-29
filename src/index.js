@@ -112,6 +112,11 @@ function Earth() {
         material={earthTexture}
         radius={1}
       />
+      <Sphere 
+        position={[16.5, 1, 0.5 ]}
+        color={"gray"}
+        radius={.5}
+      />
     </group>
     )
   }
